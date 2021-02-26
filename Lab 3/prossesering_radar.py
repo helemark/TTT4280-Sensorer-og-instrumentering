@@ -4,8 +4,6 @@ import scipy.signal as signal
 
 
 
-
-
 '''Konstanter'''
 
 f0 = 2.413e10    #denne tregner vi vel forsåvidt ikke
@@ -139,30 +137,5 @@ plt.show()
 '''
 
 speed = speed(sp, freq)
-
 print(speed)
 
-
-
-
-
-''' Driter i dette:
-
-# Plot the results in two subplots
-# NOTICE: This lazily plots the entire matrixes. All the channels will be put into the same plots.
-# If you want a single channel, use data[:,n] to get channel n
-plt.subplot(2, 1, 1)
-plt.title("Time domain signal")
-plt.xlabel("Time [us]")
-plt.ylabel("Voltage")
-plt.plot(t, data)
-
-plt.subplot(2, 1, 2)
-plt.title("Power spectrum of signal")
-plt.xlabel("Frequency [Hz]")
-plt.ylabel("Power [dB]")
-plt.plot(freq, 20*np.log(np.abs(spectrum))) # get the power spectrum
-
-plt.show()
-
-'''
