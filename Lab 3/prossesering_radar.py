@@ -3,16 +3,15 @@ import matplotlib.pyplot as plt
 import scipy.signal as signal
 
 
-
-
-
 '''Konstanter'''
 
 f0 = 2.413e10    #denne tregner vi vel forsåvidt ikke
 fs = 31250          #samplingsfrekvensen på Pi'en
 c = 3e8
-k=100
+k = 100
 
+
+"""Utdelt kode"""
 def raspi_import(path, channels=5):
     """
     Import data produced using adc_sampler.c.
@@ -37,52 +36,39 @@ sample_period *= 1e-6  # change unit to micro seconds
 num_of_samples = data.shape[0]  # returns shape of matrix
 
 
-'''Helene's Funksjoner'''
 
+"""HELENES KODE"""
 
 def fourier(vector):
     sp = np.fft.fft(vector)
     freq = np.fft.fftfreq(vector.shape[-1])
     return sp, freq
 
+def SNR(index, vec):
+    
 
-def speed(sp, freq):
+
+def speed(sp, freq):                                            #Regner ut farten til objektet ut fra frekvenskomponenten med størst amplitude
     index = np.argmax(abs(sp))
     fd = abs(freq[index]*fs)
     print('fd:', fd)
     speed = (fd*c)/(2*f0)
     return speed
 
-def butter_bandstop_filter(data, lowcut, highcut, fs, order):
+def butter_bandstop_filter(data, lowcut, highcut, fs, order):   #Hentet fra stack overflow
     nyq = 0.5 * fs
     low = lowcut / nyq
     high = highcut / nyq
-
     i, u = signal.butter(order, [low, high], btype='bandstop')
     y = signal.lfilter(i, u, data)
     return y
     
 
 
-'''
-def speed_of_time(vector, k, fs):
-    n = int(len(vector)/k)
-    window = np.hanning(n*2)
-    speed = []
-    for i in range(1, k):
-        sp, freq = fourier(vector[int(i*n-n):int(i*n+n)]*window)
-        fd = fs*abs(freq[np.argmax(abs(sp.real))])
-        print(fd)
-        speed.append(fd*c/(2*f0))
-    return speed  
-'''
-
-
-
 '''HER BEGYNNER SELVE KODEN'''
 
-data_0 = data[:,0][k*3:]-np.mean(data[:,0])
-data_1 = data[:,1][k*3:]-np.mean(data[:,1])
+data_0 = data[:,0][k*3:]-np.mean(data[:,0])                     #tar ikke med de første samplene, for de har ekstra mye støy
+data_1 = data[:,1][k*3:]-np.mean(data[:,1])                     #tar ikke med de første samplene, for de har ekstra mye støy
 
 
 plt.plot(data_1)
@@ -93,47 +79,34 @@ plt.show()
 
 """FILTRERING"""
 
-soshp = signal.butter(10, 80, 'hp', fs = fs, output='sos')
-soslp = signal.butter(10, 800, 'lp', fs = fs, output='sos')
+soshp = signal.butter(10, 80, 'hp', fs = fs, output='sos')      #høypassfilter med fc=80Hz
+soslp = signal.butter(10, 800, 'lp', fs = fs, output='sos')     #lavpassfilter med fc=800Hz
 
 data_0 = signal.sosfilt(soshp, data_0)
 data_0 = signal.sosfilt(soslp, data_0)
-data_0 = butter_bandstop_filter(data_0, 650, 690, fs, 4)
+data_0 = butter_bandstop_filter(data_0, 650, 690, fs, 4)        # vi hadde en veldig tydelig støykomponent i dette området som vi måtte fjerne
 
 data_1 = signal.sosfilt(soshp, data_1)
 data_1 = signal.sosfilt(soslp, data_1)
-data_1 = butter_bandstop_filter(data_1, 650, 690, fs, 4)
+data_1 = butter_bandstop_filter(data_1, 650, 690, fs, 4)        # vi hadde en veldig tydelig støykomponent i dette området som vi måtte fjerne
 
 
 
 plt.plot(data_1)
 plt.plot(data_0)
 plt.title('Etter filtrering')
-plt.show()
+plt.show()                                                      #plotter resultet etter filtreringen for å observere at alt ser bra ut
 
-sp0, freq0 = fourier(data_0)
-sp1, freq1 = fourier(data_1)
 
-'''
-plt.plot(freq0, sp0.real, 'b')
-plt.plot(freq1, sp1.real, 'r')
-plt.title('Spectre')
-plt.show()
-'''
-
-sp, freq = fourier(1j*data_0 + data_1)
-plt.plot(freq, abs(sp.real),'r')
+"""SIGNALBEHANDLING"""
+sp, freq = fourier(1j*data_0 + data_1)                          #kompleks fouriertransformasjon, ikke symmetrisk!
+plt.plot(freq, abs(sp.real),'r') 
 plt.title('IF_I+jIF_Q')
-sp, freq = fourier(data_1)
-plt.plot(freq, abs(sp.real),'b')
+#plt.yscale('log')     
 plt.show()
 
-
-'''
-plt.plot(sp)
-plt.show()
-'''
 
 speed = speed(sp, freq)
 print(speed)
+
 
