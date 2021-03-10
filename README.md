@@ -4,4 +4,4 @@ Dette er skrevet som en del av lab i emnet TTT4280 Sensorer og instrumentering p
 
 Lab 2: Bruker tre mikrofoner plassert i en likesidet trekant som utgangspunkt for å detektere innfallsvinkelen til en lyd. 
 
-Lab 3: Radar
+Lab 3: Bruk av dopplerradar til å beregne hastighet på et objekt i bevegelse.
