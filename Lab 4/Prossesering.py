@@ -6,14 +6,16 @@ import csv
 
 """KONSTANTER"""
 
-fc_hp = 0.2
-fc_lp = 4
-fs = 40
-filnavn = 'hvilepuls2.txt'
-steps_away = 5
-steps_window = 50
+fc_hp = 0.5
+fc_lp = 3.5
+filnavn = 'tirsdag_test6_64.txt'
 colors = ['r', 'g', 'b']
 i = 0
+upsample_factor = 16
+steps_away = 5*upsample_factor
+steps_window = 50*upsample_factor
+fs = 40
+lengde = 10
 
 
 data_r = []
@@ -22,6 +24,10 @@ data_b = []
 
 
 """FUNKSJONER"""
+
+def normalize(vec):
+    maximum = np.amax(vec)
+    return (vec/maximum)
 
 def fourier(vector):
     sp = np.fft.fft(vector)
@@ -52,6 +58,9 @@ def plot_SNR(sp, freq):
     i += 1
     return
 
+def upsample(array):
+    array_new = signal.resample(array,upsample_factor*fs*lengde)
+    return array_new
 
 
 """DATAIMPORT"""
@@ -63,9 +72,10 @@ with open(filnavn,'r') as myfile:
         data_b.append(float(line[2]))
 
 
-data_r = np.array(data_r)- np.mean(data_r)
-data_g = np.array(data_g) -np.mean(data_g)
-data_b = np.array(data_b) -np.mean(data_b)
+data_r =  np.array(data_r)- np.mean(data_r)
+data_g =  np.array(data_g) -np.mean(data_g)
+data_b =  np.array(data_b) -np.mean(data_b)
+
 
 
 plt.plot(data_r, 'r')
@@ -96,6 +106,30 @@ plt.plot(data_b, 'b')
 plt.title('Filtrert')
 plt.show()
 
+
+
+data_r = upsample(normalize(data_r))
+data_g = upsample(normalize(data_g))
+data_b = upsample(normalize(data_b))
+
+plt.plot(data_r, 'r')
+plt.plot(data_g, 'g')
+plt.plot(data_b, 'b')
+plt.title('Upsamplet')
+plt.show()
+
+
+data_r = np.hstack((data_r, np.zeros(fs*lengde*upsample_factor*8)))
+data_g = np.hstack((data_g, np.zeros(fs*lengde*upsample_factor*8)))                   
+data_b = np.hstack((data_b, np.zeros(fs*lengde*upsample_factor*8)))
+
+plt.plot(data_r, 'r')
+plt.plot(data_g, 'g')
+plt.plot(data_b, 'b')
+plt.title('Zeropadding')
+plt.show()
+
+fs = 40*upsample_factor
 
 """PROSSESERING"""
 
