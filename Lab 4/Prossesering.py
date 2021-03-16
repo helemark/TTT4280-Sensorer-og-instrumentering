@@ -6,10 +6,10 @@ import csv
 
 """KONSTANTER"""
 
-fc_hp = 0.5
-fc_lp = 2
+fc_hp = 0.2
+fc_lp = 4
 fs = 40
-filnavn = 'test_puls_output.csv'
+filnavn = 'hvilepuls2.txt'
 steps_away = 5
 steps_window = 50
 colors = ['r', 'g', 'b']
@@ -128,4 +128,3 @@ plt.plot(freq_g, abs(sp_g.real),'g')
 plt.plot(freq_b, abs(sp_b.real),'b')
 plt.title('Fouriertransformasjon')
 plt.show()
-
