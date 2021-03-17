@@ -6,16 +6,19 @@ import csv
 
 """KONSTANTER"""
 
-fc_hp = 0.5
-fc_lp = 3.5
+
 filnavn = 'tirsdag_test6_64.txt'
-colors = ['r', 'g', 'b']
-i = 0
-upsample_factor = 16
-steps_away = 5*upsample_factor
-steps_window = 50*upsample_factor
-fs = 40
-lengde = 10
+
+fc_hp = 0.5                         #Knekkfrekvens LP-filter
+fc_lp = 3.5                         #Knekkfrekvens HP-filter    
+colors = ['r', 'g', 'b']            #Brukes for å kunne plotte fargebasert i plot_SNR()
+i = 0                               #Brukes for å kunne plotte fargebasert i plot_SNR()
+
+upsample_factor = 16                #Upsampler fra fs*lengde sampler til fs*lengde*upsample_factor
+steps_away = 5*upsample_factor      #Brukt i SNR()
+steps_window = 50*upsample_factor   #Brukt i SNR()
+fs = 40                             #Samplingsfrekvensen, er video så er gitt av valgt fps
+lengde = 10                         #Lengde på video i sekunder
 
 
 data_r = []
@@ -25,15 +28,18 @@ data_b = []
 
 """FUNKSJONER"""
 
+#Normaliserer en vilkårlig vektor
 def normalize(vec):
     maximum = np.amax(vec)
     return (vec/maximum)
 
+#Returnerer absoluttverdien av reelldelen til første halvdel av fouriertransformasjonen.
 def fourier(vector):
     sp = np.fft.fft(vector)
     freq = np.fft.fftfreq(vector.shape[-1])
     return abs(sp.real[0:int(len(sp)/2)]), freq[0:int(len(sp)/2)]
 
+#Regner ut Signal-Noise-Ratio.
 def SNR(sp, freq):
     index = np.argmax(sp)
     A_sig = sp[index]
@@ -42,13 +48,14 @@ def SNR(sp, freq):
     SNR = A_sig/A_noise
     return SNR
     
+#Regner ut og returnerer pulsen ut fra frekensspekteret.
 def finn_puls(sp, freq):
     peak = np.argmax(sp)
     puls = abs(freq[peak]*fs*60)
     return puls
 
 
-#Plotte SNR i rød
+#Plotte gjennomsnittet av støyet brukt i utregning av SNR
 def plot_SNR(sp, freq):
     global i
     index=np.argmax(sp)+steps_away
@@ -58,6 +65,7 @@ def plot_SNR(sp, freq):
     i += 1
     return
 
+#Upsampler fra fs*lengde sampler til fs*lengde*upsample_factor.
 def upsample(array):
     array_new = signal.resample(array,upsample_factor*fs*lengde)
     return array_new
@@ -75,7 +83,6 @@ with open(filnavn,'r') as myfile:
 data_r =  np.array(data_r)- np.mean(data_r)
 data_g =  np.array(data_g) -np.mean(data_g)
 data_b =  np.array(data_b) -np.mean(data_b)
-
 
 
 plt.plot(data_r, 'r')
@@ -107,7 +114,6 @@ plt.title('Filtrert')
 plt.show()
 
 
-
 data_r = upsample(normalize(data_r))
 data_g = upsample(normalize(data_g))
 data_b = upsample(normalize(data_b))
@@ -131,8 +137,9 @@ plt.show()
 
 fs = 40*upsample_factor
 
-"""PROSSESERING"""
 
+
+"""PROSSESERING AV SIGNALET"""
 
 #Fouriertransformasjon
 sp_r, freq_r = fourier(data_r)
@@ -151,12 +158,12 @@ SNR_g = SNR(sp_g,freq_g)
 SNR_b = SNR(sp_b,freq_b)
 print('SNR:',SNR_r, SNR_g, SNR_b)
 
-#plotter gjennomsnittet av støyen
+#plotter gjennomsnittet av støyen brukt i beregningen av SNR
 plot_SNR(sp_r, freq_r)
 plot_SNR(sp_g, freq_g)
 plot_SNR(sp_b, freq_b)
 
-#Plotte frekvensspekteret til rød
+#Plotte frekvensspekteret til de ulike kanalene
 plt.plot(freq_r, abs(sp_r.real),'r')
 plt.plot(freq_g, abs(sp_g.real),'g')
 plt.plot(freq_b, abs(sp_b.real),'b')
