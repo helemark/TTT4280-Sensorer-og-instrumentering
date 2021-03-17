@@ -5,8 +5,6 @@ import csv
 
 
 """KONSTANTER"""
-
-
 filnavn = 'tirsdag_test6_64.txt'
 
 fc_hp = 0.5                         #Knekkfrekvens LP-filter
@@ -27,7 +25,6 @@ data_b = []
 
 
 """FUNKSJONER"""
-
 #Normaliserer en vilkårlig vektor
 def normalize(vec):
     maximum = np.amax(vec)
@@ -140,7 +137,6 @@ fs = 40*upsample_factor
 
 
 """PROSSESERING AV SIGNALET"""
-
 #Fouriertransformasjon
 sp_r, freq_r = fourier(data_r)
 sp_g, freq_g = fourier(data_g)
