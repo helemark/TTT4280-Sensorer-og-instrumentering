@@ -6,4 +6,4 @@ Lab 2: Bruker tre mikrofoner plassert i en likesidet trekant som utgangspunkt fo
 
 Lab 3: Bruk av dopplerradar til å beregne hastighet på et objekt i bevegelse.
 
-Lab 4: Bruk av et RaspberryPi camera V2 til å bergne puls.
+Lab 4: Bruk av et RaspberryPi camera V2 til å beregne puls.
