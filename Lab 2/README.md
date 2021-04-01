@@ -1,4 +1,4 @@
-Denne koden spillier inn en lyd og berenger retningen/vinkelen den kom fra. Siste halvdel av koden er grafikk for å illustrere vinkelen relativt til vår oppsett. 
+Denne koden spillier inn en lyd og berenger retningen/vinkelen den kom fra. Lyden spilles inn av tre mikrofoner plassert i en likesidet trekant, som illustrert i figuren under. Siste halvdel av koden er grafikk for å illustrere vinkelen relativt til vår oppsett. 
 
 Eksempel på resultat:
 
